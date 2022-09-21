@@ -14,8 +14,9 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
 
       home: Scaffold(
-        backgroundColor: Color.fromRGBO(0, 51, 102,1),
+        backgroundColor: Color.fromRGBO(46, 116, 196, 1.0),
         body: MyStatefulWidget(),
+
       ),
     );
   }
@@ -27,21 +28,15 @@ class MyStatefulWidget extends StatefulWidget {
   @override
   State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
 }
-
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController surnameController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-
     return Padding(
-
         padding: const EdgeInsets.all(10),
         child: ListView(
-
           children: <Widget>[
-
             Center(
               child: Container(
                 height: 200,
@@ -58,7 +53,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.all(10),
               child: TextField(
@@ -67,18 +61,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     color: Colors.white
                 ),
                 controller: nameController,
-
                 decoration: InputDecoration(
-
-
                   border: OutlineInputBorder(
-
-                    borderSide: const BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(),
                     borderRadius: BorderRadius.circular(30)
                   ),
-
                   labelText: "Name",
-
                 ),
               ),
             ),
@@ -88,14 +76,13 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 17,
-
                 ),
-
                 controller: surnameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                      borderSide: const BorderSide(),
-                      borderRadius: BorderRadius.circular(30)
+
+                      borderSide: const BorderSide(color: Colors.white),
+                      borderRadius: BorderRadius.circular(50)
                   ),
                   labelText: 'Surname',
                 ),
@@ -103,51 +90,39 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             ),
             Container(
                 height: 50,
-                padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-
+                padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: ElevatedButton(
-
-
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromRGBO(83, 13, 215, 1.0),
+                        fixedSize: const Size(50, 20),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50))),
                   child: const Text('Login'),
                   onPressed: (){
-
                     Navigator.push(context, MaterialPageRoute(builder: (context) {
                       return NewRoute(surnameController.text,nameController.text);
-
                     }));
                   }
                 )
             ),
-
-
           ],
         ));
   }
 }
 
-
-
-
-
-
 class NewRoute extends StatelessWidget {
   final String password,name;
     const NewRoute(this.password, this.name, {super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(0, 51, 102,1),
+      backgroundColor: const Color.fromRGBO(46, 116, 196, 1.0),
       appBar: AppBar(
         title: const Text("Home Page"),
-
       ),
       body: Center(
         child: Text('Welcome back\n$name $password',
         style: const TextStyle(color: Colors.white,fontSize: 27),)
-
-
-
       ),
     );
   }
