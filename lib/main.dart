@@ -1,8 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
 
-
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:untitled2/post_model.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
@@ -32,7 +33,6 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   TextEditingController nameController = TextEditingController();
   TextEditingController surnameController = TextEditingController();
-  var _dropDownValue = '';
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -65,8 +65,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 controller: nameController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
-                    borderSide: const BorderSide(),
-                    borderRadius: BorderRadius.circular(30)
+                      borderSide: const BorderSide(),
+                      borderRadius: BorderRadius.circular(30)
                   ),
                   labelText: "Name",
                 ),
@@ -91,64 +91,20 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-              child:DropdownButton(
-                hint: _dropDownValue == null
-                    ? Text('Dropdown')
-                    : Text(
-                  _dropDownValue,
-                  style: TextStyle(color: Colors.pink),
-                ),
-                isExpanded: true,
-                iconSize: 30.0,
-                style: TextStyle(color: Colors.pink),
-                items: ['Кб-45', 'Кб-46', 'Кб-47','Кб-48'].map(
-                      (val) {
-                    return DropdownMenuItem<String>(
-                      value: val,
-                      child: Text(val),
-                    );
-                  },
-                ).toList(),
-                onChanged: (val) {
-                  setState(
-                        () {
-                      _dropDownValue = val!;
-
-                    },
-                  );
-                },
-              ),
-            ),
-            Container(
                 height: 50,
                 padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(83, 13, 215, 1.0),
+                        backgroundColor: Color.fromRGBO(83, 13, 215, 1.0),
                         fixedSize: const Size(50, 20),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50))),
-                  child: const Text('Login'),
-                  onPressed: (){
-
-                    if (nameController.text+surnameController.text == "NazarMaksymiv" || nameController.text+surnameController.text =="PetroPetrenko"){
+                    child: const Text('Login'),
+                    onPressed: (){
                       Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return NewRoute(surnameController.text,nameController.text,_dropDownValue);
-                      })).then((value) => surnameController.clear()).then((value) => nameController.clear());}
-                    else{
-                      showDialog(context: context, builder:
-                        (BuildContext context)=> AlertDialog(
-                        title: const Text("Попередження"),
-                        content: const Text("Такого користувача не уснує\nСпобуйте ввести  дані ще раз"),
-                        actions: <Widget>[
-                          TextButton(onPressed: ()=> Navigator.pop(context,'OK'),
-                            child: const Text('OK'),)
-                        ],
-                        )
-                      );
+                        return Newroute();
+                      }));
                     }
-                  }
                 )
             ),
           ],
@@ -156,209 +112,88 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   }
 }
 
-class NewRoute extends StatelessWidget {
-  final String surname,name,val;
-    const NewRoute(this.surname, this.name,this.val, {super.key});
+Future<List<Post>> fetchPost() async {
+  final response =
+  await http.get(Uri.parse('https://jsonplaceholder.typicode.com/users'));
 
-  @override
-  Widget build(BuildContext context) {
+  if (response.statusCode == 200) {
+    final parsed = json.decode(response.body).cast<Map<String, dynamic>>();
 
-    var user = {};
-    var shc = ['1 пара','2 пара','3 пара','4 пара','5 пара','6 пара'];
-    var user1 = {
-      'Понеділок'   : ['ТРІБ', 'БПЗ','-','БПЗ лаб.','-','-'],
-      'Вівторок'  : ['-','-','-','Основи охорон праці', 'ТНПЗ лаб.','ТПЗ лаб.'],
-      'Середа'    : ['ТНПЗ лек.','ТПЗ лек.','-','-','-','-'],
-      'Четвер':['','','Основи охорон праці лаб.','Основи охорони праці пр.','-','-'],
-      "П'ятниця":['-','АІБ лаб.','АІБ лаб.','-','-','-']
-      };
-    var user2 = {
-      'Понеділок'   : ['-', '-','-','ТРІБ','БПЗ','-'],
-      'Вівторок'  : ['-','-','-','Основи охорон праці', 'БПЗ лаб.','-'],
-      'Середа'    : ['ТНПЗ лек.','ТПЗ лек.','-','ТНПЗ лаб.','ТПЗ лаб.','-'],
-      'Четвер':['','','Основи охорон праці лаб.','Основи охорони праці пр.','-','-'],
-      "П'ятниця":['-','-','-','-','-','-']
-    };
-    var user3 = {
-      'Понеділок'   : ['-', '-','-','ТРІБ','БПЗ','Прикладна криптографія'],
-      'Вівторок'  : ['-','-','-','Основи охорон праці', 'БПЗ лаб.','-'],
-      'Середа'    : ['-','Основи охорон праці лек.','-','-','-','-'],
-      'Четвер':['','','АШПЗ','ТРІБ лек.','-','-'],
-      "П'ятниця":['-','Прикладна криптографія','-','ТРІБ','-','-']
-    };
-    var user4 = {
-      'Понеділок'   : ['-','Прикладна криптографія','-','ТРІБ','-','-'],
-      'Вівторок'  : ['-', '-','-','ТРІБ','БПЗ','Прикладна криптографія'],
-      'Середа'    : ['-','-','-','Основи охорон праці', 'БПЗ лаб.','-'],
-      'Четвер':['','','Основи охорон праці лаб.','Основи охорони праці пр.','-','-'],
-      "П'ятниця":['-','-','-','-','-','-']
-    };
-
-    if(name+surname =="NazarMaksymiv" && val=="Кб-45" ){
-      user!.clear();
-      user.addAll(user1);
-    }
-    else if(name+surname =="NazarMaksymiv" && val=="Кб-46"){
-      user!.clear();
-      user.addAll(user2);
-    }
-    else if(name+surname =="PetroPetrenko" && val=="Кб-47"){
-      user!.clear();
-      user.addAll(user3);
-    }
-    else if(name+surname =="PetroPetrenko" && val=="Кб-48"){
-      user!.clear();
-      user.addAll(user4);
-    }
-    return Scaffold(
-
-      backgroundColor: const Color.fromRGBO(46, 116, 196, 1.0),
-      appBar: AppBar(
-
-        title: const Text("Розклад занять"),
-      ),
-
-      body: ListView(
-
-
-          children: [
-            CarouselSlider(
-              items: [
-
-                ListView.builder(
-
-
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user['Понеділок']![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-
-
-                ListView.builder(
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user['Вівторок']![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-                ListView.builder(
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user['Середа']![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-                ListView.builder(
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user['Четвер']![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-                ListView.builder(
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user["П'ятниця"]![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-                ListView.builder(
-
-                    padding: const EdgeInsets.all(8),
-                    itemCount: shc.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Container(
-
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(shc[index], style: TextStyle(fontSize: 22)),
-                              Text( user['Вівторок']![index], style: TextStyle(fontSize: 18))
-                            ],
-                          )
-                      );
-                    }
-                ),
-
-              ],
-              options: CarouselOptions(
-
-                height: 600,
-                enlargeCenterPage: true,
-                autoPlay: false,
-                aspectRatio: 16 / 9,
-                autoPlayCurve: Curves.fastOutSlowIn,
-                enableInfiniteScroll: true,
-                autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                viewportFraction: 0.8,
-              ),
-            ),
-          ]
-      ),
-    );
+    return parsed.map<Post>((json) => Post.fromMap(json)).toList();
+  } else {
+    throw Exception('Failed to load album');
   }
 }
 
 
 
+class Newroute extends StatefulWidget {
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<Newroute> {
+  late Future<List<Post>> futurePost;
+
+  @override
+  void initState() {
+    super.initState();
+    futurePost = fetchPost();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'List Of members',
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(83, 195, 156, 1.0),
+      ),
+      home: Scaffold(
+        appBar: AppBar(backgroundColor: Color.fromRGBO(83, 195, 156, 1.0),
+          title: Text('List of members NULP'),
+
+        ),
+        body: FutureBuilder<List<Post>>(
+          future: futurePost,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (_, index) => Container(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: EdgeInsets.all(20.0),
+                    decoration: BoxDecoration(
+                      color: Color.fromRGBO(83, 155, 156, 1.0),
+                      borderRadius: BorderRadius.circular(40.0),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${snapshot.data![index].name}",
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text("VNS username "+"${snapshot.data![index].username}"),
+                        SizedBox(height: 10),
+                        Text("${snapshot.data![index].email}"),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
